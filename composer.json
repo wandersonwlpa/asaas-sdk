@@ -1,15 +1,15 @@
 {
-  "name": "codephix/asaas-sdk",
+  "name": "wandersonwlpa/asaas-sdk",
   "type"       : "library",
-  "description": "Asaas.com PHP API Wrapper",
+  "description": "Asaas.com PHP API Wrapper, fork of codephix/asaas-sdk, author Max Alex contato@codephix.com",
   "keywords"   : ["Asaas", "API", "Payment SaaS", "Credit Card", "Boleto"],
-  "homepage": "http://www.codephix.com",
+  "homepage": "https://wlpamarketing.com.br",
   "license": "MIT",
   "authors": [
     {
-      "name": "Max Alex",
-      "email": "contato@codephix.com",
-      "homepage": "https://www.codephix.com"
+      "name": "Wanderson Ladislau",
+      "email": "wanderson@wlpamarketing.com.br",
+      "homepage": "https://wlpamarketing.com.br"
     }
   ],
   "require": {
