@@ -81,7 +81,7 @@ class Cliente
   // Retorna os dados do cliente de acordo com o Email
   public function getByEmail($email)
   {
-    $option = 'limit=1&email=' . $email;
+    $option = '?limit=1&email=' . $email;
     return $this->http->get('/customers', $option);
   }
 
