@@ -4,57 +4,52 @@ namespace CodePhix\Asaas;
 
 use stdClass;
 
-class Connection
-{
+class Connection {
     public $http;
     public $api_key;
     public $api_status;
     public $base_url;
     public $headers;
+    public $user_agent;
 
-    public function __construct($token, $status)
-    {
+    public function __construct($token, $status, $userAgent = false) {
 
-        if ($status == 'producao') {
+        if($status == 'producao'){
             $this->api_status = false;
-        } elseif ($status == 'homologacao') {
+        }elseif($status == 'homologacao'){
             $this->api_status = 1;
-        } else {
+        }else{
             die('Tipo de homologação invalida');
         }
         $this->api_key = $token;
-        $this->base_url = "https://" . (($this->api_status) ? 'sandbox.asaas.com/api' : 'api.asaas.com');
-
+        $this->user_agent = !$userAgent ? 'aplicacao-web' : $userAgent;
+        $this->base_url = $this->api_status ? "https://sandbox.asaas.com/api/v3" : "https://api.asaas.com/v3";
         return $this;
     }
 
 
-    public function get($url, $option = false, $custom = false)
+    public function get($url, $option = false, $custom = false )
     {
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $this->base_url . '/v3' . $url . $option);
+        curl_setopt($ch, CURLOPT_URL, $this->base_url . $url.$option);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown');
 
-
-        if (empty($this->headers)) {
-            $this->headers = array(
-                "Content-Type: application/json",
-                "access_token: " . $this->api_key
-            );
-        }
-        if (!empty($custom)) {
+        if(!empty($custom)){
             curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $custom);
         }
 
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $this->headers);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+            "Content-Type: application/json",
+            "access_token: ".$this->api_key,
+            "User-Agent: " .$this->user_agent
+        ));
 
         $response = curl_exec($ch);
         curl_close($ch);
-        $response = json_decode($response) ? json_decode($response) : $response;
+        $response = json_decode($response);
 
-        if (empty($response)) {
+        if(empty($response)){
             $response = new stdClass();
             $response->error = [];
             $response->error[0] = new stdClass();
@@ -69,32 +64,33 @@ class Connection
         $params = json_encode($params);
         $ch = curl_init();
 
-        curl_setopt($ch, CURLOPT_URL, $this->base_url . '/v3' . $url);
+        curl_setopt($ch, CURLOPT_URL, $this->base_url . $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_HEADER, FALSE);
 
         curl_setopt($ch, CURLOPT_POST, TRUE);
 
         curl_setopt($ch, CURLOPT_POSTFIELDS, $params);
-        
-        curl_setopt($ch, CURLOPT_USERAGENT, $_SERVER['HTTP_USER_AGENT'] ?? 'Unknown');
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, array(
             "Content-Type: application/json",
-            "access_token: " . $this->api_key
+            "access_token: ".$this->api_key,
+            "User-Agent: " .$this->user_agent
         ));
 
         $response = curl_exec($ch);
         curl_close($ch);
         $response = json_decode($response);
 
-        if (empty($response)) {
+        if(empty($response)){
             $response = new stdClass();
             $response->error = [];
             $response->error[0] = new stdClass();
             $response->error[0]->description = 'Tivemos um problema ao processar a requisição.';
         }
-
+        
         return $response;
+
     }
+    
 }

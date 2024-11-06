@@ -33,8 +33,8 @@ class Asaas {
 
     private $connection;
     
-    public function __construct($token, $status = false) {
-        $this->connection = new Connection($token, ((!empty($status)) ? $status : 'producao'));
+    public function __construct($token, $status = false, $userAgent = false) {
+        $this->connection = new Connection($token, ((!empty($status)) ? $status : 'producao'), $userAgent);
 
         $this->assinatura  = new Assinatura($this->connection);
         $this->cidade = new Cidades($this->connection);
